@@ -15,6 +15,7 @@
 	<packaging>pom</packaging>
 	<name>shareIt</name>
 	<description>Spring Boot app Share It graphQL</description>
+
 	<modules>
 		<module>gateway</module>
 		<module>server</module>

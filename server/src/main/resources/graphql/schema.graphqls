@@ -1,0 +1,83 @@
+type Query {
+    getUserById(id: ID!): User
+    getAllUsers(from: Int, size: Int): [User]
+    getItemById(id: ID!): Item
+    getUserItems(from: Int, size: Int): [Item]
+    searchItem(searchRequest: String, from: Int, size: Int): [Item]
+    getItemRequestById(requestId: Int): ItemRequest
+}
+
+type Mutation {
+    createUser(user: UserDto): User
+    updateUser(id: ID!, user: UserDto): User
+    deleteUserById(id: ID!): Boolean
+    createItem(itemDto: ItemDto!): Item
+    updateItem(itemId: Int!, itemDto: ItemDto!): Item
+    deleteItemById(itemId: ID!): Boolean
+    createComment(commentDto: CommentDto, itemId: Int): Comment
+    createItemRequest(inputItemRequestDto: InputItemRequestDto): ItemRequest
+}
+
+type User {
+    id: ID,
+    name: String,
+    email: String
+}
+
+input UserDto {
+    name: String,
+    email: String
+}
+
+input ItemDto {
+    name: String,
+    description: String
+    available: Boolean
+}
+
+type Item {
+    id: ID
+    name: String,
+    description: String
+    available: Boolean
+    owner: User
+}
+
+input CommentDto {
+    text: String
+}
+
+type Comment {
+    id: ID
+    text: String
+    item: Item
+    author: User
+    created: String
+}
+
+input InputItemRequestDto {
+    description: String!
+}
+
+type ItemRequest {
+    id: ID!
+    description: String
+    requester: User
+    created: String
+}
+
+type ItemRequestDto {
+    id: ID
+    description: String
+    created: String
+    items: [OutputItemDto]
+}
+
+type OutputItemDto {
+    id: ID
+    name: String
+    description: String
+    available: Boolean
+    #comments: [CommentDto]
+    requestId: Int
+}
