@@ -17,7 +17,7 @@ public interface ItemService {
 
     List<Item> searchItem(String searchRequest, Long userId, Integer from, Integer size);
 
-    void deleteItemById(Long itemId, Long userId);
+    Boolean deleteItemById(Long itemId, Long userId);
 
     Comment createComment(CommentDto commentDto, Long itemId, Long commentatorId);
 

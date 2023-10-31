@@ -15,7 +15,7 @@ import ru.practicum.mainsrv.request.dto.ItemRequestDto;
 
 import java.util.List;
 
-import static ru.practicum.mainsrv.item.ItemController.USER_ID_HEADER;
+import static ru.practicum.mainsrv.interceptor.RequestHeaderInterceptor.USER_ID_HEADER;
 
 @Slf4j
 @Controller
@@ -50,8 +50,8 @@ public class ItemRequestController {
     }
 
     @QueryMapping
-    public  List<ItemRequestDto> getOthersItemRequests(@Argument @PositiveOrZero Integer from,
-                                                       @Argument @Positive Integer size) {
+    public List<ItemRequestDto> getOthersItemRequests(@Argument @PositiveOrZero Integer from,
+                                                      @Argument @Positive Integer size) {
         Long userId = Long.parseLong(request.getHeader(USER_ID_HEADER));
         log.info("Пользователь с ID={} запросил список запросов на вещи других пользователей", userId);
         return itemRequestService.getOthersItemRequests(userId, from, size);

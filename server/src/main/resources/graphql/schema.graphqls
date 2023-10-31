@@ -1,3 +1,5 @@
+scalar LocalDateTime
+
 type Query {
     getUserById(id: ID!): User
     getAllUsers(from: Int, size: Int): [User]
@@ -52,7 +54,7 @@ type Comment {
     text: String
     item: Item
     author: User
-    created: String
+    created: LocalDateTime
 }
 
 input InputItemRequestDto {
@@ -63,13 +65,13 @@ type ItemRequest {
     id: ID!
     description: String
     requester: User
-    created: String
+    created: LocalDateTime
 }
 
 type ItemRequestDto {
     id: ID
     description: String
-    created: String
+    created: LocalDateTime
     items: [OutputItemDto]
 }
 

@@ -109,7 +109,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public void deleteItemById(Long itemId, Long userId) {
+    public Boolean deleteItemById(Long itemId, Long userId) {
         userService.checkUserExistence(userId);
         final Item item = findItemById(itemId);
         if (item.getOwner().getId().equals(userId)) {
@@ -119,6 +119,7 @@ public class ItemServiceImpl implements ItemService {
         } else {
             throw new IllegalArgumentException("Удалить вещь может только её владелец");
         }
+        return true;
     }
 
     @Transactional
