@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 import ru.practicum.gateway.item.comment.CommentDto;
 import ru.practicum.mainsrv.item.Item;
 import ru.practicum.mainsrv.item.comment.Comment;
+import ru.practicum.mainsrv.item.dto.OutputItemDto;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,17 +45,17 @@ public class ItemController {
     }
 
     @QueryMapping
-    public Mono<Item> getItemById(@Argument @Positive Long id,
-                                  @ContextValue @Positive Long userId,
-                                  @ContextValue @NotBlank String query,
-                                  @ContextValue @NotBlank String methodName) {
+    public Mono<OutputItemDto> getItemById(@Argument @Positive Long id,
+                                           @ContextValue @Positive Long userId,
+                                           @ContextValue @NotBlank String query,
+                                           @ContextValue @NotBlank String methodName) {
         log.info("Запрошен item с ID={}", id);
         return httpGraphQlClient.mutate()
                 .header(USER_ID_HEADER, userId.toString())
                 .build()
                 .document(query)
                 .retrieve(methodName)
-                .toEntity(Item.class);
+                .toEntity(OutputItemDto.class);
     }
 
     @MutationMapping
@@ -73,18 +74,18 @@ public class ItemController {
     }
 
     @QueryMapping
-    public Mono<List<Item>> getUserItems(@Argument @PositiveOrZero Integer from,
-                                         @Argument @Positive Integer size,
-                                         @ContextValue @Positive Long userId,
-                                         @ContextValue @NotBlank String query,
-                                         @ContextValue @NotBlank String methodName) {
-        log.info("Запрошен список всех itemов");
+    public Mono<List<OutputItemDto>> getUserItems(@Argument @PositiveOrZero Integer from,
+                                                  @Argument @Positive Integer size,
+                                                  @ContextValue @Positive Long userId,
+                                                  @ContextValue @NotBlank String query,
+                                                  @ContextValue @NotBlank String methodName) {
+        log.info("Запрошен список всех itemов пользователя, from={}, size={}", from, size);
         return httpGraphQlClient.mutate()
                 .header(USER_ID_HEADER, userId.toString())
                 .build()
                 .document(query)
                 .retrieve(methodName)
-                .toEntityList(Item.class);
+                .toEntityList(OutputItemDto.class);
     }
 
     @QueryMapping
@@ -94,7 +95,7 @@ public class ItemController {
                                        @ContextValue @Positive Long userId,
                                        @ContextValue @NotBlank String query,
                                        @ContextValue @NotBlank String methodName) {
-        log.info("Поисковый запрос по items: '{}'", searchRequest);
+        log.info("Поисковый запрос по items: '{}', from={}, size={}", searchRequest, from, size);
         if (searchRequest.isBlank()) {
             return Mono.justOrEmpty(Collections.emptyList());
         }
@@ -127,14 +128,11 @@ public class ItemController {
                                        @ContextValue @NotBlank String query,
                                        @ContextValue @NotBlank String methodName) {
         log.info("Запрос на создание комментария к item с ID={} от user с ID={}", itemId, userId);
-        Mono<Comment> commentMono = httpGraphQlClient.mutate()
+        return httpGraphQlClient.mutate()
                 .header(USER_ID_HEADER, userId.toString())
                 .build()
                 .document(query)
                 .retrieve(methodName)
                 .toEntity(Comment.class);
-        Comment comment = commentMono.block();
-        log.info("gateway comment {}",comment);
-        return commentMono;
     }
 }

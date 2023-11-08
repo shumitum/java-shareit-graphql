@@ -5,10 +5,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import ru.practicum.mainsrv.item.dto.OutputItemDto;
 import ru.practicum.mainsrv.user.User;
 import ru.practicum.mainsrv.utils.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -35,4 +37,7 @@ public class ItemRequest {
     @Column(name = "created")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateTimeFormat.DATE_TIME_PATTERN)
     private LocalDateTime created;
+
+    @Transient
+    private List<OutputItemDto> items;
 }

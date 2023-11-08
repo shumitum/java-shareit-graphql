@@ -28,13 +28,15 @@ public class UserController {
     @QueryMapping
     public Mono<User> getUserById(@Argument Long id) {
         log.info("Запрошен пользователь с ID={}", id);
-        return Mono.justOrEmpty(userService.getUserById(id));
+        User user = userService.getUserById(id);
+        log.info("Запрошенный пользователь с ID={}, {}", id, user);
+        return Mono.justOrEmpty(user);
     }
 
     @QueryMapping
     public Mono<List<User>> getAllUsers(@Argument Integer from,
                                         @Argument Integer size) {
-        log.info("Запрошен список всех пользователей");
+        log.info("Запрошен список всех пользователей, from={}, size={}", from, size);
         return Mono.justOrEmpty(userService.getAllUsers(from, size));
     }
 
@@ -42,12 +44,16 @@ public class UserController {
     public Mono<User> updateUser(@Argument Long id,
                                  @Argument UserDto user) {
         log.info("Запрос на обновление пользователя с ID={}, {}", id, user);
-        return Mono.justOrEmpty(userService.updateUser(id, user));
+        User updatedUser = userService.updateUser(id, user);
+        log.info("Данные пользователя с ID={} обновлены, {}", id, updatedUser);
+        return Mono.justOrEmpty(updatedUser);
     }
 
     @MutationMapping
     public Mono<Boolean> deleteUserById(@Argument Long id) {
         log.info("Запрос на удаление пользователя с ID={}", id);
-        return Mono.justOrEmpty(userService.deleteUserById(id));
+        Boolean isUserDeleted = userService.deleteUserById(id);
+        log.info("Пользователь с ID={} удален? {}", id, isUserDeleted);
+        return Mono.justOrEmpty(isUserDeleted);
     }
 }

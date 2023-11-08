@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.mainsrv.item.comment.dto.CommentDto;
+import ru.practicum.mainsrv.booking.Booking;
+import ru.practicum.mainsrv.item.comment.Comment;
 
 import java.util.List;
 
@@ -17,8 +18,8 @@ public class OutputItemDto {
     private String name;
     private String description;
     private Boolean available;
-    //private BookingInfoDto lastBooking;
-    //private BookingInfoDto nextBooking;
-    private List<CommentDto> comments;
+    private Booking lastBooking;
+    private Booking nextBooking;
+    private List<Comment> comments;
     private Long requestId;
 }

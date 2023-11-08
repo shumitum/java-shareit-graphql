@@ -50,7 +50,7 @@ public class UserController {
                                         @Argument @Positive Integer size,
                                         @ContextValue String query,
                                         @ContextValue String methodName) {
-        log.info("Запрошен список всех пользователей");
+        log.info("Запрошен список всех пользователей, from={}, size={}", from, size);
         return httpGraphQlClient.document(query)
                 .retrieve(methodName)
                 .toEntityList(User.class);

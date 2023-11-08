@@ -1,40 +1,49 @@
 scalar LocalDateTime
+#scalar Long
 
 type Query {
     getUserById(id: ID!): User
-    getAllUsers(from: Int, size: Int): [User]
-    getItemById(id: ID!): Item
-    getUserItems(from: Int, size: Int): [Item]
-    searchItem(searchRequest: String, from: Int, size: Int): [Item]
+    getAllUsers(from: Int = 0, size: Int = 10): [User]
+    getItemById(id: ID!): OutputItemDto
+    getUserItems(from: Int = 0, size: Int = 10): [OutputItemDto]
+    searchItem(searchRequest: String, from: Int = 0, size: Int = 10): [Item]
     getItemRequestById(requestId: Int): ItemRequest
+    getUserItemRequests: [ItemRequest]
+    getOthersItemRequests(from: Int = 0, size: Int = 10): [ItemRequest]
+    getBookingById(bookingId: Int): Booking
+    getUserBookingsByState(state: BookingState = ALL, from: Int = 0, size: Int = 10): [Booking]
+    getUserItemsBookingsByState(state: BookingState = ALL, from: Int = 0, size: Int = 10): [Booking]
 }
 
 type Mutation {
     createUser(user: UserDto): User
     updateUser(id: ID!, user: UserDto): User
     deleteUserById(id: ID!): Boolean
-    createItem(itemDto: ItemDto!): Item
+    createItem(itemDto: ItemDto): Item
     updateItem(itemId: Int!, itemDto: ItemDto!): Item
     deleteItemById(itemId: ID!): Boolean
     createComment(commentDto: CommentDto, itemId: Int): Comment
-    createItemRequest(inputItemRequestDto: InputItemRequestDto): ItemRequest
+    createItemRequest(itemRequestDto: ItemRequestDto): ItemRequest
+    createBooking(bookingDto: BookingDto): Booking
+    approveBooking(bookingId: Int, approved: Boolean): Booking
 }
 
 type User {
     id: ID,
-    name: String,
+    name: String
     email: String
 }
 
 input UserDto {
-    name: String,
+    name: String
     email: String
 }
 
 input ItemDto {
-    name: String,
-    description: String
-    available: Boolean
+    name: String!
+    description: String!
+    available: Boolean!
+    requestId: Int
 }
 
 type Item {
@@ -43,10 +52,11 @@ type Item {
     description: String
     available: Boolean
     owner: User
+    request: ItemRequest
 }
 
 input CommentDto {
-    text: String
+    text: String!
 }
 
 type Comment {
@@ -57,7 +67,7 @@ type Comment {
     created: LocalDateTime
 }
 
-input InputItemRequestDto {
+input ItemRequestDto {
     description: String!
 }
 
@@ -66,20 +76,54 @@ type ItemRequest {
     description: String
     requester: User
     created: LocalDateTime
-}
-
-type ItemRequestDto {
-    id: ID
-    description: String
-    created: LocalDateTime
     items: [OutputItemDto]
 }
+
+#type ItemRequestDto {
+#    id: ID
+#    description: String
+#    created: LocalDateTime
+#    items: [OutputItemDto]
+#}
 
 type OutputItemDto {
     id: ID
     name: String
     description: String
     available: Boolean
-    #comments: [CommentDto]
+    lastBooking: Booking
+    nextBooking: Booking
+    comments: [Comment]
     requestId: Int
+}
+
+input BookingDto {
+    itemId: Int!
+    start: LocalDateTime!
+    end: LocalDateTime!
+}
+
+enum BookingStatus{
+    WAITING
+    APPROVED
+    REJECTED
+    CANCELED
+}
+
+enum BookingState {
+    ALL
+    CURRENT
+    PAST
+    FUTURE
+    WAITING
+    REJECTED
+}
+
+type Booking {
+    id: ID
+    start: LocalDateTime
+    end: LocalDateTime
+    item: Item
+    booker: User
+    status: BookingStatus
 }

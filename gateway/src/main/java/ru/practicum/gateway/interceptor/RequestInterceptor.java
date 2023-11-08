@@ -22,7 +22,7 @@ public class RequestInterceptor implements WebGraphQlInterceptor {
             String correctOperationName = Pattern.compile("^.")
                     .matcher(operationName)
                     .replaceFirst(m -> m.group().toLowerCase());
-            log.info("operationName " + correctOperationName);
+            log.info("correctOperationName " + correctOperationName);
             request.configureExecutionInput((input, inputBuilder) ->
                     inputBuilder
                             .graphQLContext(contextBuilder -> contextBuilder.put("query", value))

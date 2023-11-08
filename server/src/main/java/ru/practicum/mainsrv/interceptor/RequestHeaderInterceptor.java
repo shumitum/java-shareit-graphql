@@ -21,7 +21,6 @@ public class RequestHeaderInterceptor implements WebGraphQlInterceptor {
                 throw new NotValidHeaderException("Пустой user ID header");
             }
             Long userId = Long.parseLong(userIdHeader);
-
             request.configureExecutionInput((input, inputBuilder) ->
                     inputBuilder
                             .graphQLContext(contextBuilder -> contextBuilder.put("userId", userId))

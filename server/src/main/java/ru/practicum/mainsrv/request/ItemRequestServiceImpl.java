@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.mainsrv.item.ItemMapper;
 import ru.practicum.mainsrv.item.ItemRepository;
 import ru.practicum.mainsrv.item.dto.OutputItemDto;
-import ru.practicum.mainsrv.request.dto.InputItemRequestDto;
 import ru.practicum.mainsrv.request.dto.ItemRequestDto;
 import ru.practicum.mainsrv.user.UserService;
 import ru.practicum.mainsrv.utils.PageParam;
@@ -26,7 +25,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Transactional
     @Override
-    public ItemRequest createItemRequest(InputItemRequestDto itemRequestDto, Long requesterId) {
+    public ItemRequest createItemRequest(ItemRequestDto itemRequestDto, Long requesterId) {
         final ItemRequest newItemRequest = itemRequestMapper.toItemRequest(itemRequestDto);
         newItemRequest.setCreated(LocalDateTime.now());
         newItemRequest.setRequester(userService.findUserById(requesterId));
@@ -35,36 +34,29 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Transactional(readOnly = true)
     @Override
-    public ItemRequestDto getItemRequestById(Long requestId, Long userId) {
+    public ItemRequest getItemRequestById(Long requestId, Long userId) {
         userService.checkUserExistence(userId);
         final ItemRequest itemRequest = itemRequestRepository.findById(requestId)
                 .orElseThrow(() -> new NoSuchElementException(String.format("Заявки с ID=%d не существует", requestId)));
-        final ItemRequestDto itemRequestDto = itemRequestMapper.toItemRequestDto(itemRequest);
-        final List<OutputItemDto> items = itemRepository.findByRequestId(requestId)
-                .stream()
-                .map(itemMapper::toOutputItemDto)
-                .toList();
-        itemRequestDto.setItems(items);
-        return itemRequestDto;
+        itemRequest.setItems(getItemDtoList(requestId));
+        return itemRequest;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemRequestDto> getUserItemRequests(Long userId) {
+    public List<ItemRequest> getUserItemRequests(Long userId) {
         userService.checkUserExistence(userId);
         return itemRequestRepository.findByRequesterIdOrderByCreatedDesc(userId).stream()
-                .map(itemRequestMapper::toItemRequestDto)
                 .peek(itemRequest -> itemRequest.setItems(getItemDtoList(itemRequest.getId())))
                 .toList();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemRequestDto> getOthersItemRequests(Long userId, Integer from, Integer size) {
+    public List<ItemRequest> getOthersItemRequests(Long userId, Integer from, Integer size) {
         userService.checkUserExistence(userId);
         return itemRequestRepository.findItemRequestsByRequesterIdNotOrderByCreatedDesc(userId, PageParam.pageFrom(from, size))
                 .stream()
-                .map(itemRequestMapper::toItemRequestDto)
                 .peek(itemRequest -> itemRequest.setItems(getItemDtoList(itemRequest.getId())))
                 .toList();
     }
